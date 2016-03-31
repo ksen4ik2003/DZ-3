@@ -16,12 +16,12 @@ class List
 {
     Node *Head, *Tail;  //голова и хвост списка
     public:
-    List(): Head(NULL), Tail(NULL){};   //конструктор
-    ~List();                            //деструктор
+    List(): Head(NULL), Tail(NULL){};
+    ~List();
     Node *Find(char NewWord[]);     //функция поиска элемента в списке
     void Add(char NewWord[]);       //добавление элемента в список
     void Del(Node *DelNode);        //удаление элемента из списка
-    void Show();                    //вывод на экран элементов списка
+    friend ostream& operator<<(ostream& st, const List& lst);
 };
 
 List::~List()
@@ -36,14 +36,14 @@ List::~List()
 
 void List::Add(char NewWord[])
 {
-    Node *q = new Node;	//выделяем память под новый элемент списка
-    q->next = NULL;	//указываем, что следующего элемента нет
-    strcpy(q->word,NewWord);	//помещаем в новый элемент наше слово
+    Node *q = new Node;
+    q->next = NULL;	
+    strcpy(q->word,NewWord);
     if(Head != NULL)	//если в списке уже были элементы
     {
-        q->prev = Tail;	//для нового элемента указываем ссылку на предыдущий элемент - на хвост
-        Tail->next = q;	//для последнего элемента указываем ссылку на след элемент - новый элемент
-        Tail = q;	//изменяем хвост на новый элемент
+        q->prev = Tail;
+        Tail->next = q;
+        Tail = q;
     }
     else		//отдельный случай, когда список был пустой
     {
@@ -61,20 +61,20 @@ void List::Del(Node *DelNode)
     }
     else if(Head == DelNode)	//для случая, когда удаляемый элемент является головой списка
     {
-        Head = DelNode->next;	//делаем головой второй элемент
+        Head = DelNode->next;
         Head->prev = NULL;	
     }
     else if(Tail == DelNode)	//для случая, когда удаляемый элемент является хвостом списка
     {
-        Tail = DelNode->prev;	//делаем хвостом предпоследний элемент
+        Tail = DelNode->prev;
         Tail->next = NULL;	
     }
     else			//для случая, если удаляемый элемент где-то в середине списка
     {
-        Node *q = DelNode->prev;	//копируем указатель на предыдущий элемент
-        q->next = DelNode->next;	//устанавливаем на него указатель следующего
-        q = DelNode->next;		//копируем указатель на след элемент
-        q->prev = DelNode->prev;	//устанавливаем на него указатель предыдущего
+        Node *q = DelNode->prev;
+        q->next = DelNode->next;
+        q = DelNode->next;
+        q->prev = DelNode->prev;
     }
     delete DelNode;	//освобождаем память от удаляемого элемента
 }
@@ -87,24 +87,25 @@ Node *List::Find(char NewWord[])
     return q;
 }
 
- void List::Show()
- {
-     Node *q = Head; //Временно указываем на адрес первого элемента
-      while (q != NULL) //Пока не встретим пустое значение
+ostream& operator<<(ostream& st, const List& lst)
+{
+     Node *q = lst.Head;
+      while (q != NULL)
      {
-        cout<< q->word << " "; //Выводим каждое считанное значение на экран
-        q = q->next; //Смена адреса на адрес следующего элемента
+        st<< q->word << " ";
+        q = q->next;
      }
-     cout << "\n";
+     st << "\n";
+     return st;
 }
 
 
 
 int main(int argc, char *argv[])
 {
-    List lst;	//объявляем объект класса List
+    List lst;
 
-    ifstream file(argv[1]);	//открываем файл
+    ifstream file(argv[1]);
     if(!file)
         cout << "File not opened";
     else
@@ -143,7 +144,7 @@ int main(int argc, char *argv[])
                     cout << "no " << modstrword <<"\n";
             }
         }
-        lst.Show(); //Отображаем получившийся список на экране
+        cout << lst;
         file.close();
     }
     cin.get();
